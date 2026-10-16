@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.1/dist/apexcharts.min.js"></script>
+
+<!-- FullCalendar CDN -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<style>
+  :root {
+    --ink: #1c2733; 
+    --muted: #5e6b78; 
+    --line: #dde2e8; 
+    --paper: #f4f6f8; 
+    --surface: #ffffff;
+    --brand: #0e5f55; 
+    --brand-soft: #e3f1ee;
+    --agora: #0e7a6b; 
+    --programada: #3563a8; 
+    --concluida: #8c98a6; 
+    --alerta: #b4551c; 
+    --alerta-soft: #fbeee4;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --font: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--paper); font-size: 14px; line-height: 1.45; }
+  
+  /* Header */
+  header { background: var(--brand); color: #fff; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; box-shadow: var(--shadow); }
+  header h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: .88; }
+  header button { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 6px; padding: 8px 16px; font: inherit; font-weight: 500; cursor: pointer; transition: all .2s ease; }
+  header button:hover { background: rgba(255,255,255,0.25); border-color: #fff; }
+
+  /* Main Container */
+  main { padding: 24px 32px 56px; max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #f2b84b; outline-offset: 1px; }
+
+  /* Navegação de Abas */
+  .tabs-bar {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid var(--line);
+    margin-bottom: 4px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 20px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 6px 6px 0 0;
+  }
+  .tab-btn:hover {
+    color: var(--brand);
+    background: var(--surface);
+  }
+  .tab-btn.active {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+    background: var(--surface);
+    font-weight: 700;
+  }
+
+  .tab-pane {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .tab-pane.active {
+    display: flex;
+  }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; }
+  .card-filtros { overflow: visible !important; position: relative; z-index: 10; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #fafbfc; }
+  .card-title { font-size: 16px; font-weight: 700; margin: 0; color: var(--ink); }
+
+  /* KPIs */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+  .kpi { 
+    padding: 20px; 
+    border-left: 1px solid var(--line); 
+    min-width: 0; 
+    cursor: pointer; 
+    user-select: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease; 
+  }
+  .kpi:first-child { border-left: 0; }
+  .kpi:hover { background-color: #f8fafc; }
+  .kpi:active { transform: scale(0.99); }
+  .kpi.active {
+    background-color: #f0f4f8;
+    box-shadow: inset 0 -3px 0 0 var(--brand);
+  }
+  .kpi.agora.active {
+    background-color: var(--brand-soft);
+    box-shadow: inset 0 -3px 0 0 var(--agora);
+  }
+  .kpi.prox.active {
+    background-color: #e2eaf7;
+    box-shadow: inset 0 -3px 0 0 var(--programada);
+  }
+  .kpi .n { font-size: 32px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+  .kpi .l { color: var(--ink); font-weight: 600; font-size: 13px; }
+  .kpi .d { margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .kpi.agora .n { color: var(--agora); }
+  .kpi.prox .n { color: var(--programada); }
+  .kpi.definir .n { color: #C15713; }
+  .kpi.definir.active {
+    background-color: #fbeee4;
+    box-shadow: inset 0 -3px 0 0 #C15713;
+  }
+
+  /* Alertas */
+  .aviso { background: var(--alerta-soft); border: 1px solid #efcbb0; border-left: 4px solid var(--alerta); border-radius: 8px; padding: 14px 18px; box-shadow: var(--shadow); }
+  .aviso h2 { margin: 0 0 6px; font-size: 14px; color: var(--alerta); font-weight: 700; }
+  .aviso ul { margin: 0; padding-left: 20px; }
+  .aviso li { margin-bottom: 2px; }
+
+  /* Filtros organizados */
+  .filtros-bar { padding: 16px 20px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+  .campo-filtro { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 200px; position: relative; }
+  .campo-filtro label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .campo-filtro input, .campo-filtro select { font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); width: 100%; height: 38px; }
+
+  /* Botão de Limpar Filtros */
+  .btn-limpar {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0 16px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 38px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-limpar:hover {
+    background: #eef2f5;
+    color: #a12020;
+    border-color: #cbd5e1;
+  }
+
+  /* Sugestões de Busca (Autocomplete) */
+  .sugestoes-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-height: 230px;
+    overflow-y: auto;
+    margin-top: 4px;
+    display: none;
+  }
+  .sugestao-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink);
+    border-bottom: 1px solid #f0f4f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s ease;
+  }
+  .sugestao-item:last-child { border-bottom: none; }
+  .sugestao-item:hover {
+    background-color: var(--brand-soft);
+    color: var(--brand);
+  }
+  .sugestao-item small {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* Legenda */
+  .legenda { display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 12.5px; }
+  .legenda-item { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+  .legenda i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+
+  /* FullCalendar Customizado */
+  .calendar-wrap { padding: 20px; }
+  #calendar { font-family: var(--font); color: var(--ink); min-height: 600px; }
+  .fc .fc-toolbar-title { font-size: 18px; font-weight: 700; color: var(--ink); }
+  .fc .fc-button-primary { 
+    background-color: var(--brand); 
+    border-color: var(--brand); 
+    color: #fff; 
+    font-weight: 500; 
+    border-radius: 6px; 
+    padding: 6px 12px;
+    text-transform: capitalize;
+  }
+  .fc .fc-button-primary:hover { background-color: var(--agora); border-color: var(--agora); }
+  .fc .fc-button-primary:disabled { background-color: var(--line); border-color: var(--line); color: var(--muted); }
+  .fc .fc-button-primary:not(:disabled).fc-button-active, 
+  .fc .fc-button-primary:not(:disabled):active { background-color: var(--agora); border-color: var(--agora); }
+  .fc-theme-standard td, .fc-theme-standard th { border-color: var(--line); }
+  .fc .fc-daygrid-day-number { color: var(--ink); font-weight: 600; font-size: 12px; }
+  .fc-event { cursor: pointer; border-radius: 4px; border: 0 !important; padding: 2px 4px; font-size: 11.5px; font-weight: 600; }
+
+  /* Destaque do dia de HOJE em vermelho */
+  .fc .fc-day-today {
+    background-color: var(--alerta-soft) !important;
+  }
+  .fc .fc-day-today .fc-daygrid-day-number {
+    color: var(--alerta) !important;
+    font-weight: 700;
+  }
+
+  /* Timeline */
+  .tl { overflow: auto; max-height: 580px; }
+  .tl-in { min-width: max-content; }
+  .linha { display: flex; height: 44px; border-bottom: 1px solid #eef1f4; }
+  .linha.cab { height: 32px; }
+  .nome { 
+    position: sticky; 
+    left: 0; 
+    z-index: 3; 
+    flex: 0 0 320px; 
+    background: var(--surface); 
+    padding: 6px 16px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    border-right: 2px solid var(--line); 
+    overflow: hidden; 
+  }
+  .nome b { font-weight: 600; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-size: 13px; color: var(--ink); }
+  .nome span { font-size: 11px; color: var(--muted); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+  .trilha { position: relative; flex: none; }
+  .cab { position: sticky; top: 0; z-index: 5; height: 32px; background: #edf1f5; border-bottom: 1px solid var(--line); }
+  .cab .nome { background: #edf1f5; font-weight: 700; justify-content: center; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+  .mes { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--line); padding: 7px 0 0 8px; font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+  .mes.ano { border-left: 2px solid var(--muted); font-weight: 700; color: var(--ink); }
+  .unidade { height: auto; min-height: 36px; background: var(--brand-soft); border-bottom: 1px solid var(--line); }
+  .unidade .nome { 
+    background: var(--brand-soft); 
+    font-weight: 700; 
+    color: var(--brand); 
+    font-size: 12px; 
+    text-transform: uppercase; 
+    white-space: normal; 
+    word-wrap: break-word;
+    padding: 8px 16px; 
+    line-height: 1.35;
+  }
+  .barra { position: absolute; top: 10px; height: 24px; border-radius: 5px; min-width: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); cursor: pointer; transition: filter .15s ease, box-shadow .15s ease; }
+  .barra.agora { background: var(--agora); } 
+  .barra.programada { background: var(--programada); } 
+  .barra.concluida { background: var(--concluida); }
+  .hoje { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--alerta); z-index: 2; }
+  .hoje-rot { position: absolute; top: 3px; left: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #fff; background: var(--alerta); border-radius: 3px; padding: 1px 5px; z-index: 6; }
+  .barra:hover { filter: brightness(1.12); box-shadow: 0 0 0 2px rgba(28,39,51,.35), 0 2px 6px rgba(0,0,0,.2); z-index: 4; }
+
+  /* Tooltip da linha do tempo */
+  #tlTip { position: fixed; z-index: 100; display: none; pointer-events: none; width: 310px; background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--concluida); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 12px 14px; font-size: 12.5px; line-height: 1.45; }
+  #tlTip .t-nome { font-size: 14px; font-weight: 700; color: var(--ink); }
+  #tlTip .t-sub { color: var(--muted); font-size: 11.5px; margin-bottom: 8px; }
+  #tlTip .t-per { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-top: 1px solid #eef1f4; border-bottom: 1px solid #eef1f4; margin-bottom: 8px; }
+  #tlTip .t-per div { display: flex; flex-direction: column; }
+  #tlTip .t-per small { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); font-weight: 700; }
+  #tlTip .t-per b { font-variant-numeric: tabular-nums; font-weight: 600; }
+  #tlTip .t-dias { text-align: right; align-items: flex-end; }
+  #tlTip .t-linha { margin-top: 6px; color: var(--ink); }
+  #tlTip .t-linha small { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); font-weight: 700; }
+  #tlTip .t-conf { margin-top: 8px; padding: 6px 8px; border-radius: 6px; background: var(--alerta-soft); color: var(--alerta); font-size: 12px; }
+  #tlTip .t-conf b { font-weight: 700; }
+  #tlTip i.pt { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+
+  /* Próximas férias (ApexCharts) */
+  .prox-wrap { padding: 8px 12px 12px; }
+  .tip { font-family: var(--font); font-size: 12.5px; padding: 10px 14px; min-width: 210px; line-height: 1.5; }
+  .tip b { display: block; font-size: 13px; color: var(--ink); }
+  .tip .sub { color: var(--muted); font-size: 11.5px; margin-bottom: 6px; }
+  .tip .per { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tip .tag { margin-top: 6px; }
+
+  /* Tabela */
+  .tab-wrap { overflow-y: auto; max-height: 480px; border-radius: 0 0 10px 10px; }
+  .tab-wrap table { border-collapse: collapse; width: 100%; min-width: 860px; }
+  .tab-wrap th { position: sticky; top: 0; z-index: 10; background: #eef2f5; color: var(--ink); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; border-bottom: 2px solid var(--line); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+  .tab-wrap td { padding: 10px 14px; vertical-align: middle; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+  .tab-wrap tr.fim-grupo td { border-bottom: 2px solid var(--line); }
+  .tab-wrap td[rowspan] { border-right: 1px solid var(--line); background-color: #ffffff; }
+  .tab-wrap tbody tr:hover td { background-color: #f1f5f9; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11.5px; font-weight: 600; white-space: nowrap; text-align: center; }
+  .tag.agora { background: #d9f0ea; color: #0b5d51; } 
+  .tag.programada { background: #e2eaf7; color: #274e8a; }
+  .tag.concluida { background: #eceff2; color: #56626f; } 
+  .tag.definir { background: var(--alerta-soft); color: var(--alerta); }
+  .tag.sem { background: #fff; color: var(--muted); border: 1px dashed var(--concluida); }
+  .vazio, .erro { padding: 36px; text-align: center; color: var(--muted); font-weight: 500; }
+  .erro { color: #a12020; }
+
+  @media (max-width: 900px) { 
+    .kpis { grid-template-columns: 1fr 1fr; } 
+    .kpi:nth-child(3) { border-left: 0; } 
+    .kpi:nth-child(n+3) { border-top: 1px solid var(--line); } 
+    main { padding: 16px; } 
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 id="titulo">Painel de férias</h1>
+    <p id="atualizado">Carregando dados…</p>
+  </div>
+  <button id="btnAtualizar" type="button">Atualizar dados</button>
+</header>
+
+<main>
+  <!-- Barra de Abas -->
+  <nav class="tabs-bar">
+    <button class="tab-btn active" data-tab="painel">Visão Geral</button>
+    <button class="tab-btn" data-tab="calendario">Calendário</button>
+  </nav>
+
+  <!-- KPIs partilhados -->
+  <section class="kpis" id="kpis" aria-label="Indicadores"></section>
+  
+  <!-- Filtros partilhados -->
+  <section class="card card-filtros">
+    <div class="filtros-bar">
+      <div class="campo-filtro" style="flex: 2; min-width: 260px;">
+        <label for="busca">Buscar</label>
+        <input id="busca" type="search" placeholder="Buscar por servidor ou cargo..." aria-label="Buscar por servidor ou cargo" autocomplete="off">
+        <div id="sugestoesBusca" class="sugestoes-dropdown"></div>
+      </div>
+      <div class="campo-filtro">
+        <label for="fUnidade">Unidade / Setor</label>
+        <select id="fUnidade" aria-label="Filtrar por unidade"></select>
+      </div>
+      <div class="campo-filtro">
+        <label for="fStatus">Situação</label>
+        <select id="fStatus" aria-label="Filtrar por situação">
+          <option value="">Todas as situações</option>
+          <option value="agora">Em férias hoje</option>
+          <option value="programada">Programadas</option>
+          <option value="concluida">Concluídas</option>
+          <option value="definir">A definir</option>
+          <option value="sem">Sem programação</option>
+        </select>
+      </div>
+      <!-- Botão de Limpar Filtros -->
+      <div class="campo-filtro" style="flex: 0 0 auto; min-width: auto;">
+        <button id="btnLimparFiltros" type="button" class="btn-limpar" title="Limpar todos os filtros">✕ Limpar filtros</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Aba 1: Visão Geral -->
+  <div id="tab-painel" class="tab-pane active">
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Linha do tempo</h2>
+        <div class="legenda">
+          <span class="legenda-item"><i style="background:var(--agora)"></i>Em férias hoje</span>
+          <span class="legenda-item"><i style="background:var(--programada)"></i>Programada</span>
+          <span class="legenda-item"><i style="background:var(--concluida)"></i>Concluída</span>
+          <span class="legenda-item"><i style="background:var(--alerta)"></i>Hoje</span>
+        </div>
+      </div>
+      <div class="tl" id="tl"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Próximas férias</h2>
+        <div class="legenda"><span class="legenda-item">Quem inicia férias nos próximos 30 dias, por proximidade da data de início</span></div>
+      </div>
+      <div class="prox-wrap" id="prox"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Períodos de férias detalhados</h2>
+      </div>
+      <div class="tab-wrap" id="tabela"></div>
+    </section>
+  </div>
+
+  <!-- Aba 2: Calendário Exclusivo -->
+  <div id="tab-calendario" class="tab-pane">
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Calendário de férias</h2>
+        <div class="legenda">
+          <span class="legenda-item"><i style="background:var(--agora)"></i>Em férias hoje</span>
+          <span class="legenda-item"><i style="background:var(--programada)"></i>Programada</span>
+          <span class="legenda-item"><i style="background:var(--concluida)"></i>Concluída</span>
+        </div>
+      </div>
+      <div class="calendar-wrap">
+        <div id="calendar"></div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<script>
+(function () {
+  var MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var ROT = { agora: 'Em férias', programada: 'Programada', concluida: 'Concluída', definir: 'A definir', sem: 'Sem programação' };
+  var MW = 84;
+  var CORES_TL = { agora: '#0e7a6b', programada: '#3563a8', concluida: '#8c98a6' };
+  var TL_INICIO = '2026-09-01';
+  var DADOS = null;
+  var CALENDAR = null;
+  var fKpi = '';
+  var abaAtiva = 'painel';
+  var $ = function (id) { return document.getElementById(id); };
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+  function isoDe(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function hojeIso() { return isoDe(new Date()); }
+  function br(iso) { return iso ? iso.split('-').reverse().join('/') : ''; }
+  function parte(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function dias(a, b) { var x = a.split('-'), y = b.split('-'); return Math.round((Date.UTC(+y[0], +y[1] - 1, +y[2]) - Date.UTC(+x[0], +x[1] - 1, +x[2])) / 864e5) + 1; }
+  function maisDias(iso, n) { var d = parte(iso); d.setDate(d.getDate() + n); return isoDe(d); }
+  function nomeCurto(n) { return n.split(' ').slice(0, 2).join(' '); }
+
+  function situacao(f, hoje) {
+    if (f.definir) return 'definir';
+    if (hoje < f.inicio) return 'programada';
+    if (hoje > f.fim) return 'concluida';
+    return 'agora';
+  }
+  function statusPessoa(p, hoje) {
+    if (!p.ferias.length) return ['sem'];
+    return p.ferias.map(function (f) { return situacao(f, hoje); });
+  }
+
+  /* Gestão de Abas */
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var targetTab = this.getAttribute('data-tab');
+      if (targetTab === abaAtiva) return;
+
+      abaAtiva = targetTab;
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function (p) { p.classList.remove('active'); });
+
+      this.classList.add('active');
+      $('tab-' + targetTab).classList.add('active');
+
+      if (targetTab === 'calendario' && CALENDAR) {
+        setTimeout(function() {
+          CALENDAR.updateSize();
+        }, 50);
+      }
+    });
+  });
+
+  // CÓDIGO NOVO (Cole este no lugar):
+ function carregar() {
+    $('atualizado').textContent = 'Carregando dados…';
+    fetch('dados_dashboard.json')
+      .then(function(response) {
+        if (!response.ok) throw new Error('Arquivo dados_dashboard.json não encontrado');
+        return response.json();
+      })
+      .then(function(d) {
+        DADOS = d;
+        $('titulo').textContent = d.titulo;
+        $('atualizado').textContent = 'Dados atualizados em ' + d.atualizadoEm;
+        montarUnidades();
+        render(true);
+      })
+      .catch(function(e) {
+        $('atualizado').textContent = 'Falha ao carregar';
+        $('tl').innerHTML = '<div class="erro">Não foi possível ler o arquivo JSON: ' + esc(e.message || e) + '</div>';
+      });
+  }
+
+  function montarUnidades() {
+    var un = [], vistos = {};
+    DADOS.pessoas.forEach(function (p) { if (!vistos[p.unidade]) { vistos[p.unidade] = 1; un.push(p.unidade); } });
+    var atual = $('fUnidade').value;
+    $('fUnidade').innerHTML = '<option value="">Todas as unidades</option>' + un.map(function (u) { return '<option>' + esc(u) + '</option>'; }).join('');
+    $('fUnidade').value = atual;
+  }
+
+  /* Autocompletar / Sugestões na busca */
+  function atualizarSugestoes() {
+    var q = $('busca').value.trim().toLowerCase();
+    var sugContainer = $('sugestoesBusca');
+    if (!q || !DADOS) {
+      sugContainer.style.display = 'none';
+      sugContainer.innerHTML = '';
+      return;
+    }
+
+    var correspondencias = [];
+    var vistos = {};
+
+    DADOS.pessoas.forEach(function (p) {
+      if (p.nome.toLowerCase().indexOf(q) >= 0 && !vistos['p_' + p.nome]) {
+        vistos['p_' + p.nome] = true;
+        correspondencias.push({ texto: p.nome, tipo: 'Servidor', sub: (p.cargo ? p.cargo + ' · ' : '') + p.unidade });
+      }
+      if (p.cargo && p.cargo.toLowerCase().indexOf(q) >= 0 && !vistos['c_' + p.cargo]) {
+        vistos['c_' + p.cargo] = true;
+        correspondencias.push({ texto: p.cargo, tipo: 'Cargo', sub: p.unidade });
+      }
+    });
+
+    if (correspondencias.length === 0) {
+      sugContainer.style.display = 'none';
+      sugContainer.innerHTML = '';
+      return;
+    }
+
+    var html = correspondencias.slice(0, 7).map(function (item) {
+      return '<div class="sugestao-item" data-val="' + esc(item.texto) + '">' +
+               '<span><b>' + esc(item.texto) + '</b></span>' +
+               '<small>' + esc(item.tipo) + ' (' + esc(item.sub) + ')</small>' +
+             '</div>';
+    }).join('');
+
+    sugContainer.innerHTML = html;
+    sugContainer.style.display = 'block';
+
+    sugContainer.querySelectorAll('.sugestao-item').forEach(function (el) {
+      el.addEventListener('click', function () {
+        $('busca').value = this.getAttribute('data-val');
+        sugContainer.style.display = 'none';
+        render(false);
+      });
+    });
+  }
+
+  function filtradas(hoje) {
+    var q = $('busca').value.trim().toLowerCase(), u = $('fUnidade').value, s = $('fStatus').value;
+    var limite = maisDias(hoje, 30);
+
+    return DADOS.pessoas.filter(function (p) {
+      if (u && p.unidade !== u) return false;
+      if (q && (p.nome + ' ' + p.cargo).toLowerCase().indexOf(q) < 0) return false;
+      if (s && statusPessoa(p, hoje).indexOf(s) < 0) return false;
+
+      if (fKpi === 'agora') {
+        if (!p.ferias.some(function (f) { return situacao(f, hoje) === 'agora'; })) return false;
+      } else if (fKpi === 'prox') {
+        if (!p.ferias.some(function (f) { return !f.definir && f.inicio > hoje && f.inicio <= limite; })) return false;
+      } else if (fKpi === 'definir') {
+        if (!p.ferias.some(function (f) { return f.definir; })) return false;
+      } else if (fKpi === 'sem') {
+        if (p.ferias.length > 0) return false;
+      }
+
+      return true;
+    });
+  }
+
+  function kpis(hoje) {
+    var limite = maisDias(hoje, 30), agora = 0, prox = 0, definir = 0, sem = 0;
+    
+    DADOS.pessoas.forEach(function (p) {
+      if (p.ferias.some(function (f) { return situacao(f, hoje) === 'agora'; })) agora++;
+      if (p.ferias.some(function (f) { return !f.definir && f.inicio > hoje && f.inicio <= limite; })) prox++;
+      definir += p.ferias.filter(function (f) { return f.definir; }).length;
+      if (!p.ferias.length) sem++;
+    });
+
+    function k(id, cls, n, l, d) { 
+      var activeClass = (fKpi === id) ? ' active' : '';
+      var descHtml = d ? '<div class="d">' + d + '</div>' : '';
+      return '<div class="kpi ' + cls + activeClass + '" data-kpi="' + id + '" title="Clique para filtrar por ' + l + '">' +
+               '<div class="n">' + n + '</div>' +
+               '<div class="l">' + l + '</div>' +
+               descHtml +
+             '</div>'; 
+    }
+
+    $('kpis').innerHTML =
+      k('agora', 'agora', agora, 'Em férias hoje', '') +
+      k('prox', 'prox', prox, 'Próximos 30 dias', 'Início até ' + br(limite)) +
+      k('definir', 'definir', definir, 'Períodos a definir', 'Com marcação "A definir"') +
+      k('sem', '', sem, 'Sem programação', 'Servidores sem lançamentos');
+
+    var elems = $('kpis').querySelectorAll('.kpi');
+    elems.forEach(function (el) {
+      el.addEventListener('click', function () {
+        var tipo = this.getAttribute('data-kpi');
+        fKpi = (fKpi === tipo) ? '' : tipo;
+        render(false);
+      });
+    });
+  }
+
+  function renderCalendar(lista, hoje) {
+    var events = [];
+    
+    lista.forEach(function (p) {
+      p.ferias.forEach(function (f) {
+        if (f.definir || !f.inicio || !f.fim) return;
+        var st = situacao(f, hoje);
+        
+        var dtFim = parte(f.fim);
+        dtFim.setDate(dtFim.getDate() + 1);
+
+        events.push({
+          title: nomeCurto(p.nome) + ' (' + p.unidade + ')',
+          start: f.inicio,
+          end: isoDe(dtFim),
+          backgroundColor: CORES_TL[st] || '#3563a8',
+          borderColor: CORES_TL[st] || '#3563a8',
+          extendedProps: {
+            nome: p.nome,
+            cargo: p.cargo,
+            unidade: p.unidade,
+            inicio: f.inicio,
+            fim: f.fim,
+            periodo: f.periodo,
+            st: st
+          }
+        });
+      });
+    });
+
+    if (!CALENDAR) {
+      var calendarEl = $('calendar');
+      CALENDAR = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt-br',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,multiMonthYear,listMonth'
+        },
+        buttonText: {
+          today: 'Hoje',
+          month: 'Mês',
+          multiMonthYear: 'Ano',
+          list: 'Lista'
+        },
+        height: 'auto',
+        events: events,
+        eventClick: function(info) {
+          var p = info.event.extendedProps;
+          alert(
+            '👤 Servidor: ' + p.nome + '\n' +
+            '💼 Cargo: ' + p.cargo + '\n' +
+            '🏢 Unidade: ' + p.unidade + '\n' +
+            '🗓️ Período: ' + br(p.inicio) + ' a ' + br(p.fim) + ' (' + dias(p.inicio, p.fim) + ' dias)\n' +
+            '📌 Situação: ' + ROT[p.st] +
+            (p.periodo ? '\n📑 Aquisitivo: ' + p.periodo : '')
+          );
+        }
+      });
+      CALENDAR.render();
+    } else {
+      CALENDAR.removeAllEvents();
+      CALENDAR.addEventSource(events);
+    }
+  }
+
+  var TIPS = [];
+  var SEM = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  function dsem(iso) { return SEM[parte(iso).getDay()] + ', ' + br(iso); }
+  function plural(n, u) { return n + ' ' + u + (n === 1 ? '' : 's'); }
+
+  function tipHtml(p, f, hoje) {
+    var st = situacao(f, hoje), cor = CORES_TL[st];
+    var tot = dias(f.inicio, f.fim), quando;
+    if (st === 'agora') {
+      var restam = dias(hoje, f.fim);
+      quando = 'Em férias agora · volta em <b>' + br(maisDias(f.fim, 1)).slice(0, 5) + '</b> (restam ' + plural(restam, 'dia') + ')';
+    } else if (st === 'programada') {
+      var falta = dias(hoje, f.inicio) - 1;
+      quando = 'Começa ' + (falta === 1 ? '<b>amanhã</b>' : 'em <b>' + plural(falta, 'dia') + '</b>');
+    } else {
+      quando = 'Terminou há <b>' + plural(dias(f.fim, hoje) - 1, 'dia') + '</b>';
+    }
+
+    var outros = p.ferias.filter(function (o) { return o !== f; })
+      .sort(function (a, b) { return (a.inicio || '9') < (b.inicio || '9') ? -1 : 1; })
+      .map(function (o) {
+        return o.definir
+          ? '<div><i class="pt" style="background:var(--alerta)"></i>A definir' + (o.periodo ? ' · ' + esc(o.periodo) : '') + '</div>'
+          : '<div><i class="pt" style="background:' + CORES_TL[situacao(o, hoje)] + '"></i>' + br(o.inicio) + ' a ' + br(o.fim) + ' (' + dias(o.inicio, o.fim) + ' d)</div>';
+      }).join('');
+
+    var conf = [];
+    DADOS.pessoas.forEach(function (q) {
+      if (q === p || q.unidade !== p.unidade) return;
+      q.ferias.forEach(function (g) {
+        if (g.definir) return;
+        var i = g.inicio > f.inicio ? g.inicio : f.inicio, e = g.fim < f.fim ? g.fim : f.fim;
+        if (i <= e) conf.push(nomeCurto(q.nome) + ' (' + br(i).slice(0, 5) + ' a ' + br(e).slice(0, 5) + ')');
+      });
+    });
+    var confHtml = conf.length
+      ? '<div class="t-conf"><b>Coincide com ' + conf.length + ' colega' + (conf.length > 1 ? 's' : '') + ' da unidade:</b><br>' +
+        esc(conf.slice(0, 3).join(', ')) + (conf.length > 3 ? ' e mais ' + (conf.length - 3) : '') + '</div>'
+      : '';
+
+    return '<div data-cor="' + cor + '">' +
+      '<div class="t-nome">' + esc(p.nome) + '</div>' +
+      '<div class="t-sub">' + esc(p.cargo) + ' · ' + esc(p.unidade) + '</div>' +
+      '<div class="t-per"><div><small>Início</small><b>' + dsem(f.inicio) + '</b></div>' +
+      '<div><small>Fim</small><b>' + dsem(f.fim) + '</b></div>' +
+      '<div class="t-dias"><small>Duração</small><b>' + plural(tot, 'dia') + '</b></div></div>' +
+      '<span class="tag ' + st + '">' + ROT[st] + '</span> <span style="margin-left:4px">' + quando + '</span>' +
+      (f.periodo ? '<div class="t-linha"><small>Período aquisitivo</small>' + esc(f.periodo) + '</div>' : '') +
+      (outros ? '<div class="t-linha"><small>Outros períodos</small>' + outros + '</div>' : '') +
+      confHtml + '</div>';
+  }
+
+  function timeline(lista, hoje) {
+    TIPS = [];
+    var datas = [TL_INICIO, hoje];
+    DADOS.pessoas.forEach(function (p) { p.ferias.forEach(function (f) { if (!f.definir) datas.push(f.inicio, f.fim); }); });
+    datas.sort();
+    var ini = parte(TL_INICIO), fim = parte(datas[datas.length - 1]);
+    var m0 = { y: ini.getFullYear(), m: ini.getMonth() };
+    var nM = (fim.getFullYear() - m0.y) * 12 + fim.getMonth() - m0.m + 1;
+    var W = nM * MW;
+    function x(iso, fimDoDia) {
+      var d = parte(iso), dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      return ((d.getFullYear() - m0.y) * 12 + d.getMonth() - m0.m + (d.getDate() - 1 + (fimDoDia ? 1 : 0)) / dim) * MW;
+    }
+    var bg = 'background-image:linear-gradient(to right,#eef1f4 1px,transparent 1px);background-size:' + MW + 'px 100%;width:' + W + 'px';
+    var cab = '';
+    for (var i = 0; i < nM; i++) {
+      var mm = (m0.m + i) % 12, yy = m0.y + Math.floor((m0.m + i) / 12);
+      cab += '<div class="mes' + (mm === 0 ? ' ano' : '') + '" style="left:' + i * MW + 'px;width:' + MW + 'px">' + MESES[mm] + '/' + String(yy).slice(2) + '</div>';
+    }
+    var xh = x(hoje, false);
+    var h = '<div class="tl-in"><div class="linha cab"><div class="nome">Servidor</div><div class="trilha" style="width:' + W + 'px">' + cab + '<div class="hoje-rot" style="left:' + xh + 'px">Hoje</div></div></div>';
+    var ultima = null;
+    lista.forEach(function (p) {
+      if (p.unidade !== ultima) { ultima = p.unidade; h += '<div class="linha unidade"><div class="nome">' + esc(p.unidade) + '</div><div class="trilha" style="width:' + W + 'px"></div></div>'; }
+      var barras = p.ferias.filter(function (f) { return !f.definir; }).map(function (f) {
+        var l = Math.max(0, x(f.inicio, false)), r = x(f.fim, true);
+        if (r <= 0) return '';
+        var w = r - l;
+        return '<div class="barra ' + situacao(f, hoje) + '" style="left:' + l + 'px;width:' + w + 'px" data-t="' + (TIPS.push(tipHtml(p, f, hoje)) - 1) + '"></div>';
+      }).join('');
+      h += '<div class="linha"><div class="nome"><b title="' + esc(p.nome) + '">' + esc(p.nome) + '</b><span>' + esc(p.cargo) + '</span></div><div class="trilha" style="' + bg + '">' + barras + '<div class="hoje" style="left:' + xh + 'px"></div></div></div>';
+    });
+    h += '</div>';
+    $('tl').innerHTML = lista.length ? h : '<div class="vazio">Nenhum servidor encontrado para os filtros selecionados.</div>';
+    return xh;
+  }
+
+  var CHART2 = null;
+  function proximas(lista, hoje) {
+    if (CHART2) { CHART2.destroy(); CHART2 = null; }
+    var el = $('prox'), itens = [], limite = maisDias(hoje, 30);
+    lista.forEach(function (p) {
+      var f = p.ferias.filter(function (x) { return !x.definir && x.inicio > hoje && x.inicio <= limite; })
+        .sort(function (a, b) { return a.inicio < b.inicio ? -1 : 1; })[0];
+      if (f) itens.push({ p: p, f: f, falta: dias(hoje, f.inicio) - 1 });
+    });
+    itens.sort(function (a, b) { return a.falta - b.falta; });
+    if (!itens.length) { el.innerHTML = '<div class="vazio">Nenhum início de férias nos próximos 30 dias (até ' + br(limite) + ').</div>'; return; }
+    el.innerHTML = '<div id="proxChart"></div>';
+
+    function quando(n) { return n === 1 ? 'amanhã' : 'em ' + n + ' dias'; }
+
+    CHART2 = new ApexCharts($('proxChart'), {
+      series: [{ name: 'Dias até o início', data: itens.map(function (i) {
+        return { x: nomeCurto(i.p.nome), y: i.falta, meta: i };
+      }) }],
+      chart: { type: 'bar', height: itens.length * 42 + 60, width: '100%', fontFamily: 'Public Sans, system-ui, sans-serif',
+        animations: { enabled: false }, toolbar: { show: false } },
+      plotOptions: { bar: { horizontal: true, barHeight: '58%', borderRadius: 3, dataLabels: { position: 'top' } } },
+      colors: ['#3563a8'],
+      dataLabels: { enabled: true, textAnchor: 'start', offsetX: 6,
+        style: { colors: ['#1c2733'], fontSize: '12px', fontWeight: 600 },
+        background: { enabled: false }, dropShadow: { enabled: false },
+        formatter: function (v, o) {
+          var m = o.w.config.series[0].data[o.dataPointIndex].meta;
+          return br(m.f.inicio).slice(0, 5) + ' · ' + quando(m.falta);
+        } },
+      xaxis: { min: 0, max: 40, tickAmount: 4,
+        title: { text: 'Dias até o início das férias', style: { color: '#5e6b78', fontSize: '11.5px', fontWeight: 500 } },
+        labels: { style: { colors: '#5e6b78', fontSize: '11.5px' }, formatter: function (v) { return Math.round(v); } } },
+      yaxis: { labels: { maxWidth: 200, style: { colors: '#1c2733', fontSize: '12.5px', fontWeight: 500 } } },
+      grid: { borderColor: '#eef1f4', xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
+      legend: { show: false },
+      tooltip: { custom: function (o) {
+        var m = o.w.config.series[0].data[o.dataPointIndex].meta;
+        return '<div class="tip"><b>' + esc(m.p.nome) + '</b><div class="sub">' + esc(m.p.cargo) + ' · ' + esc(m.p.unidade) + '</div>' +
+          '<div class="per">' + br(m.f.inicio) + ' a ' + br(m.f.fim) + ' (' + dias(m.f.inicio, m.f.fim) + ' dias)</div>' +
+          '<span class="tag programada">Começa ' + quando(m.falta) + '</span></div>';
+      } }
+    });
+    CHART2.render();
+  }
+
+  function tabela(lista, hoje) {
+    var s = $('fStatus').value, linhas = '';
+
+    lista.forEach(function (p) {
+      var fs = p.ferias.length 
+        ? p.ferias.slice().sort(function (a, b) { return (a.inicio || '9') < (b.inicio || '9') ? -1 : 1; }) 
+        : [null];
+
+      var fsFiltrados = fs.filter(function (f) {
+        var st = f ? situacao(f, hoje) : 'sem';
+        return !s || st === s;
+      });
+
+      var total = fsFiltrados.length;
+      if (total === 0) return;
+
+      fsFiltrados.forEach(function (f, idx) {
+        var st = f ? situacao(f, hoje) : 'sem';
+        var eUltimaLinha = (idx === total - 1);
+        var classeLinha = eUltimaLinha ? ' class="fim-grupo"' : '';
+
+        linhas += '<tr' + classeLinha + '>';
+
+        if (idx === 0) {
+          var qtdBadge = total > 1 
+            ? ' <span style="background:var(--brand-soft);color:var(--brand);padding:2px 7px;border-radius:12px;font-size:11px;font-weight:700;margin-left:4px;">' + total + '</span>' 
+            : '';
+
+          linhas += '<td rowspan="' + total + '">' + esc(p.unidade) + '</td>' +
+                    '<td rowspan="' + total + '"><b>' + esc(p.nome) + '</b>' + qtdBadge + '</td>' +
+                    '<td rowspan="' + total + '">' + esc(p.cargo) + '</td>';
+        }
+
+        linhas += '<td>' + (f && !f.definir ? br(f.inicio) : '-') + '</td>' +
+                  '<td>' + (f && !f.definir ? br(f.fim) : '-') + '</td>' +
+                  '<td class="num">' + (f && !f.definir ? dias(f.inicio, f.fim) : '-') + '</td>' +
+                  '<td><span class="tag ' + st + '">' + ROT[st] + '</span></td>' +
+                  '</tr>';
+      });
+    });
+
+    $('tabela').innerHTML = linhas
+      ? '<table><thead><tr><th>Unidade</th><th>Servidor</th><th>Cargo/Função</th><th>Início</th><th>Fim</th><th>Dias</th><th>Situação</th></tr></thead><tbody>' + linhas + '</tbody></table>'
+      : '<div class="vazio">Nenhum período de férias encontrado.</div>';
+  }
+
+  function render(primeira) {
+    if (!DADOS) return;
+    var hoje = hojeIso(), lista = filtradas(hoje);
+    kpis(hoje); 
+    tipOcultar(); tip.dataset.cur = '';
+    renderCalendar(lista, hoje);
+    var xh = timeline(lista, hoje);
+    proximas(lista, hoje);
+    tabela(lista, hoje);
+    if (primeira) { var tl = $('tl'); tl.scrollLeft = Math.max(0, xh - 160); }
+  }
+
+  /* Tooltip flutuante */
+  var tip = document.createElement('div');
+  tip.id = 'tlTip';
+  document.body.appendChild(tip);
+  function tipOcultar() { tip.style.display = 'none'; }
+  function tipMover(e) {
+    var w = tip.offsetWidth, h = tip.offsetHeight, x = e.clientX + 16, y = e.clientY + 16;
+    if (x + w > window.innerWidth - 8) x = e.clientX - w - 16;
+    if (y + h > window.innerHeight - 8) y = e.clientY - h - 16;
+    tip.style.left = Math.max(8, x) + 'px';
+    tip.style.top = Math.max(8, y) + 'px';
+  }
+  $('tl').addEventListener('mousemove', function (e) {
+    var b = e.target.closest ? e.target.closest('.barra') : null;
+    if (!b || !b.hasAttribute('data-t')) { tipOcultar(); return; }
+    var html = TIPS[+b.getAttribute('data-t')];
+    if (tip.dataset.cur !== b.getAttribute('data-t')) {
+      tip.innerHTML = html;
+      tip.dataset.cur = b.getAttribute('data-t');
+      tip.style.borderLeftColor = (tip.firstChild && tip.firstChild.getAttribute('data-cor')) || '';
+    }
+    tip.style.display = 'block';
+    tipMover(e);
+  });
+  $('tl').addEventListener('mouseleave', function () { tipOcultar(); tip.dataset.cur = ''; });
+  $('tl').addEventListener('scroll', tipOcultar);
+
+  /* Eventos da Busca e Filtros */
+  $('busca').addEventListener('input', function () {
+    atualizarSugestoes();
+    render(false);
+  });
+  $('busca').addEventListener('focus', function () {
+    if ($('busca').value.trim()) atualizarSugestoes();
+  });
+
+  /* Oculta sugestões ao clicar fora do campo */
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.campo-filtro')) {
+      var sug = $('sugestoesBusca');
+      if (sug) sug.style.display = 'none';
+    }
+  });
+
+  /* Ação do Botão Limpar Filtros */
+  $('btnLimparFiltros').addEventListener('click', function () {
+    $('busca').value = '';
+    $('sugestoesBusca').style.display = 'none';
+    $('sugestoesBusca').innerHTML = '';
+    $('fUnidade').value = '';
+    $('fStatus').value = '';
+    fKpi = '';
+    render(false);
+  });
+
+  ['fUnidade', 'fStatus'].forEach(function (id) { $(id).addEventListener('input', function () { render(false); }); });
+  $('btnAtualizar').addEventListener('click', carregar);
+  carregar();
+})();
+</script>
+</body>
+</html>

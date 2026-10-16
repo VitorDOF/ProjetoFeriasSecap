@@ -1,0 +1,301 @@
+{
+  "titulo": "Painel de Férias SECAP",
+  "atualizadoEm": "16/10/2026 10:05",
+  "pessoas": [
+    {
+      "unidade": "Gabinete",
+      "nome": "Danielle Gomes de Oliveira",
+      "cargo": "Secretária",
+      "ferias": [
+        {
+          "inicio": "2026-10-13",
+          "fim": "2026-10-17",
+          "periodo": "2024",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "Gabinete",
+      "nome": "Tatiana de Jesus Mesquita",
+      "cargo": "Chefe de Gabinete",
+      "ferias": [
+        {
+          "inicio": "2026-11-09",
+          "fim": "2026-11-13",
+          "periodo": "2023 - 18 dias",
+          "definir": false
+        },
+        {
+          "inicio": "2026-12-21",
+          "fim": "2026-12-30",
+          "periodo": "2023 - 18 dias",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "Gabinete",
+      "nome": "Suziane da Silva Sampaio",
+      "cargo": "Secretaria-Geral",
+      "ferias": [
+        {
+          "inicio": "2026-01-04",
+          "fim": "2026-01-13",
+          "periodo": "18/04/2024 a 17/04/2025",
+          "definir": false
+        },
+        {
+          "inicio": "2027-06-28",
+          "fim": "2027-07-17",
+          "periodo": "18/04/2024 a 17/04/2025",
+          "definir": false
+        },
+        {
+          "inicio": null,
+          "fim": null,
+          "periodo": "18/04/2025 a 17/04/2026",
+          "definir": true
+        },
+        {
+          "inicio": null,
+          "fim": null,
+          "periodo": "18/04/2026 a 18/04/2027",
+          "definir": true
+        }
+      ]
+    },
+    {
+      "unidade": "Gabinete",
+      "nome": "Ariadiny de Oliveira Sousa",
+      "cargo": "Secretaria-Geral",
+      "ferias": [
+        {
+          "inicio": "2027-07-05",
+          "fim": "2027-08-03",
+          "periodo": "25/04/2026 a 24/04/2027",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "Gabinete",
+      "nome": "Ubaldina Guimarães Cardoso Trindade",
+      "cargo": "Secretaria-Geral",
+      "ferias": []
+    },
+    {
+      "unidade": "Contratação",
+      "nome": "Paulo Andre",
+      "cargo": "Diretor de Contratações",
+      "ferias": []
+    },
+    {
+      "unidade": "Contratação",
+      "nome": "Geovanna",
+      "cargo": "Gerente de Contratações",
+      "ferias": []
+    },
+    {
+      "unidade": "Contratação",
+      "nome": "Rayssa",
+      "cargo": "Assessora",
+      "ferias": []
+    },
+    {
+      "unidade": "Contratação",
+      "nome": "Robson",
+      "cargo": "Assessor",
+      "ferias": []
+    },
+    {
+      "unidade": "Captação",
+      "nome": "Luana Pereira Bastos",
+      "cargo": "Gerente de Captação",
+      "ferias": [
+        {
+          "inicio": "2026-10-13",
+          "fim": "2026-10-27",
+          "periodo": "",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "Captação",
+      "nome": "Jucimara",
+      "cargo": "Técnica",
+      "ferias": []
+    },
+    {
+      "unidade": "Captação",
+      "nome": "Edjane Martins de Siqueira",
+      "cargo": "Técnica",
+      "ferias": [
+        {
+          "inicio": "2026-10-05",
+          "fim": "2026-10-09",
+          "periodo": "2023",
+          "definir": false
+        },
+        {
+          "inicio": "2026-12-14",
+          "fim": "2026-12-23",
+          "periodo": "2024",
+          "definir": false
+        },
+        {
+          "inicio": "2027-01-27",
+          "fim": "2027-02-05",
+          "periodo": "2024",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "Administrativo",
+      "nome": "Grazielle Pires da Silva",
+      "cargo": "Diretora Administrativa",
+      "ferias": [
+        {
+          "inicio": "2026-10-26",
+          "fim": "2026-10-30",
+          "periodo": "",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "Administrativo",
+      "nome": "Regina Amaral",
+      "cargo": "",
+      "ferias": []
+    },
+    {
+      "unidade": "Administrativo",
+      "nome": "Fernando da Silva Vieira",
+      "cargo": "Assistente",
+      "ferias": [
+        {
+          "inicio": "2026-10-13",
+          "fim": "2026-10-20",
+          "periodo": "",
+          "definir": false
+        },
+        {
+          "inicio": "2026-11-13",
+          "fim": "2026-11-19",
+          "periodo": "",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "GEPP",
+      "nome": "Flávio Máximo",
+      "cargo": "Coordenador Operacional",
+      "ferias": [
+        {
+          "inicio": "2026-10-13",
+          "fim": "2026-10-25",
+          "periodo": "2023",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "GEPP",
+      "nome": "Gabriela Bazilio Faria",
+      "cargo": "Assistente Administrativo",
+      "ferias": [
+        {
+          "inicio": "2026-11-09",
+          "fim": "2026-11-18",
+          "periodo": "02/03/2025 A 01/03/2026",
+          "definir": false
+        },
+        {
+          "inicio": "2026-02-17",
+          "fim": "2026-02-26",
+          "periodo": "02/03/2025 A 01/03/2026",
+          "definir": false
+        },
+        {
+          "inicio": "2026-08-16",
+          "fim": "2026-08-25",
+          "periodo": "02/03/2025 A 01/03/2026",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "GEPP",
+      "nome": "Jorge Alberto das Dores Neto",
+      "cargo": "Analista em Obras",
+      "ferias": [
+        {
+          "inicio": "2026-10-13",
+          "fim": "2026-11-11",
+          "periodo": "05/12/2024 a 04/12/2025",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "GEPP",
+      "nome": "André Naves Machado",
+      "cargo": "Assessor técnico",
+      "ferias": [
+        {
+          "inicio": "2027-08-16",
+          "fim": "2027-09-16",
+          "periodo": "17/07/2026 a 17/07/2027",
+          "definir": false
+        }
+      ]
+    },
+    {
+      "unidade": "Diretoria de Governança e Articulação",
+      "nome": "João Vitor de Oliveira Marchiori",
+      "cargo": "Diretor de Governança e Articulação",
+      "ferias": []
+    },
+    {
+      "unidade": "Diretoria de Governança e Articulação",
+      "nome": "Jofran Ferreira de Araújo",
+      "cargo": "Assistente Administrativo / Gerente de Monitoramento",
+      "ferias": [
+        {
+          "inicio": "2026-11-23",
+          "fim": "2026-12-02",
+          "periodo": "06/06/2023 a 05/06/2024",
+          "definir": false
+        },
+        {
+          "inicio": "2027-01-20",
+          "fim": "2027-01-29",
+          "periodo": "06/06/2023 a 05/06/2024",
+          "definir": false
+        },
+        {
+          "inicio": "2027-07-05",
+          "fim": "2027-07-14",
+          "periodo": "06/06/2023 a 05/06/2024",
+          "definir": false
+        },
+        {
+          "inicio": null,
+          "fim": null,
+          "periodo": "06/06/2024 a 05/06/2025",
+          "definir": true
+        },
+        {
+          "inicio": null,
+          "fim": null,
+          "periodo": "06/06/2025 a 05/06/2026",
+          "definir": true
+        }
+      ]
+    }
+  ]
+}
